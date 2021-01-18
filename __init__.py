@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from adapt.intent import IntentBuilder
-from mycroft.messagebus.message import Message
+from mycroft.messagebus.message import Message, dig_for_message
 from mycroft import MycroftSkill, intent_handler
 
 
@@ -24,7 +24,10 @@ class StopSkill(MycroftSkill):
     @intent_handler(IntentBuilder("").require("Stop"))
     def handle_stop(self, event):
         # Framework catches this, invokes stop() method on all skills
-        self.bus.emit(Message("mycroft.stop"))
+        message = dig_for_message()
+        m = message.forward('mycroft.stop') if message \
+            else Message('mycroft.stop')
+        self.bus.emit(m)
 
     ######################################################################
     # Typically the enclosure will handle all of the following
